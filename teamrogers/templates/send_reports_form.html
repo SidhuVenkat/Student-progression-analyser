@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Send Reports</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 400px;
+            margin: 80px auto;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        label {
+            font-weight: 500;
+            display: block;
+            margin-bottom: 10px;
+            color: #444;
+            text-align: left;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            margin-bottom: 20px;
+            font-size: 15px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #0052cc;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #003d99;
+        }
+
+        a {
+            text-decoration: none;
+            color: #0052cc;
+            font-weight: 500;
+            display: inline-block;
+            margin-top: 20px;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Send Class Reports</h1>
+        <form method="POST" action="{{ url_for('send_reports') }}">
+            <label for="class_name">Select Class:</label>
+            <select name="class_name" id="class_name">
+                {% for class in classes %}
+                    <option value="{{ class }}">{{ class }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit">Send Reports</button>
+        </form>
+        <p><a href="{{ url_for('teacher_dashboard') }}">← Back to Dashboard</a></p>
+    </div>
+</body>
+</html>

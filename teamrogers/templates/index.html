@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="{{ url_for('static', filename='img/favi.png') }}">
+    <title>Login</title>
+    <link rel="stylesheet" href="index.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            text-align: center;
+            padding: 20px;
+        }
+        nav {
+            background-color: rgb(28, 28, 143);
+            padding: 20px;
+            color: white;
+        }
+        h1 {
+            margin: 10px 0;
+        }
+        marquee {
+            font-size: 1.2em;
+            color: yellow;
+        }
+        .h-screen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 70vh;
+            gap: 20px;
+        }
+        .buttons {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            transition: transform 0.2s;
+        }
+        .buttons:hover {
+            transform: scale(1.05);
+        }
+        button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: rgb(28, 28, 143);
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: rgb(50, 50, 200);
+        }
+        img {
+            border-radius: 10px;
+            transition: transform 0.2s;
+        }
+        img:hover {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <img src="{{ url_for('static', filename='img/favi2.jpg') }}" height="100px" width="100px" alt="Logo">
+            <h1>Welcome to Student Progress Analyzer</h1>
+            <marquee behavior="scroll" direction="right">This is in testing process!</marquee>
+        </nav>
+
+        <h3>Select your role to continue:</h3>
+        <div class="h-screen">
+            <div class="buttons">
+                <a href="{{url_for('teacher_login')}}">
+                    <img src="{{ url_for('static', filename='img/teacher.png') }}" height="200px" width="250px" alt="Teacher Login">
+                    <button>Teacher Login</button>
+                </a>
+            </div>
+            <div class="buttons">
+                <a href="{{url_for('student_login')}}">
+                    <img src="{{ url_for('static', filename='img/student.png') }}" height="200px" width="250px" alt="Student Login">
+                    <button>Student Login</button>
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

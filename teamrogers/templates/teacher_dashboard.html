@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='teacher_dashboard.css') }}">
+    <style>
+        /* General body styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Navbar styles */
+        nav {
+            background-color: rgb(28, 28, 143);
+            padding: 15px;
+            color: white;
+            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        nav h2 {
+            margin: 0;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 15px;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+        /* Main container styles */
+        .dashboard-container {
+            max-width: 90%; /* Increased width for table */
+            margin: 30px auto;
+            padding: 25px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Section styles */
+        .dashboard-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+
+        .dashboard-section h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+
+        /* Form styles */
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        input, textarea, select {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            background-color: rgb(28, 28, 143);
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: rgb(50, 50, 200);
+        }
+
+        .logout-btn {
+            background-color: red;
+        }
+
+        .logout-btn:hover {
+            background-color: darkred;
+        }
+
+        .link-btn {
+            display: inline-block;
+            padding: 10px 15px;
+            margin-top: 10px;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+
+        .link-btn:hover {
+            background-color: #0056b3;
+        }
+
+        /* Student Data Table Styles */
+        .student-data-table {
+            margin-top: 20px;
+            width: 100%;
+            border-collapse: collapse;
+            border: 1px solid #ccc;
+        }
+
+        .student-data-table th, .student-data-table td {
+            padding: 8px;
+            border: 1px solid #ccc;
+            text-align: left;
+        }
+
+        .student-data-table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+
+        .student-data-table ul {
+            list-style-type: disc;
+            padding-left: 20px;
+            margin-bottom: 0;
+        }
+
+        .student-data-table li {
+            margin-bottom: 5px;
+        }
+
+        /* Report Sending Styles */
+        .report-status {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            white-space: pre-line; /* Preserve line breaks */
+        }
+        .report-status.error {
+            color: red;
+            font-weight: bold;
+        }
+        .report-status.success {
+            color: green;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <h2>Teacher Dashboard</h2>
+        <div>
+            <a href="{{ url_for('send_reports_form') }}">Send Class Reports</a>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+
+        {% if report_message %}
+        <div class="dashboard-section">
+            <h3>Report Sending Status</h3>
+            <div class="report-status {{ 'error' if 'Error' in report_message or 'Failed' in report_message else 'success' }}">
+                {{ report_message }}
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="dashboard-section">
+            <h3>Current Database</h3>
+            <a href="{{ url_for('download_students') }}" class="link-btn">Download Student Data</a>
+        </div>
+
+        <div class="dashboard-section">
+            <h3>Upload Student Data</h3>
+            <form action="/upload_student_data" method="post" enctype="multipart/form-data">
+                <label for="student_file">Select Excel File (.xlsx):</label>
+                <input type="file" id="student_file" name="file" accept=".xlsx" required>
+                <button type="submit">Upload</button>
+            </form>
+        </div>
+
+        <div class="dashboard-section">
+            <h3>Assign Homework</h3>
+            <form method="POST" action="/assign_homework">
+                <label for="subject">Subject:</label>
+                <input type="text" id="subject" name="subject" placeholder="Enter Subject" required>
+
+                <label for="class_name">Class Name:</label>
+                <input type="text" id="class_name" name="class_name" placeholder="Enter class" required>
+
+                <label for="condition_type">Condition:</label>
+                <select id="condition_type" name="condition_type">
+                    <option value="less_than">Less than (&lt;)</option>
+                    <option value="greater_than">Greater than (&gt;)</option>
+                    <option value="equal_to">Equal to (=)</option>
+                </select>
+
+                <label for="condition_marks">Average marks to compare:</label>
+                <input type="number" id="condition_marks" name="condition_marks" min="0" max="100" required>
+
+                <label for="homework_text">Homework Description:</label>
+                <textarea id="homework_text" name="homework_text" rows="4" placeholder="Enter homework details" required></textarea>
+
+                <button type="submit">Assign Homework</button>
+            </form>
+        </div>
+
+        <div class="dashboard-section">
+            <h3>View Student Data</h3>
+            <form action="/view_student_data" method="post">
+                <label for="roll_number">Roll Number:</label>
+                <input type="text" id="roll_number" name="roll_number" placeholder="Enter Roll Number" required>
+
+                <label for="class_name_view">Class Name:</label>
+                <input type="text" id="class_name_view" name="class_name_view" placeholder="Enter Class Name" required>
+
+                <button type="submit">View Student Data</button>
+            </form>
+
+            {% if student_data %}
+            <div class="student-data">
+                <h4>Student Information</h4>
+                <p><strong>Name:</strong> {{ student_data.Name }}</p>
+                <p><strong>Class:</strong> {{ student_data.Class }}</p>
+
+                <h4>Marks</h4>
+                <table class="student-data-table">
+                    <thead>
+                        <tr>
+                            <th>Subject</th>
+                            <th>Marks</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for subject, marks in student_data.Marks.items() %}
+                        <tr>
+                            <td>{{ subject }}</td>
+                            <td>{{ marks }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <h4>Homework</h4>
+                <ul>
+                    {% for hw in student_data.Homework %}
+                    <li>{{ hw }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+</body>
+</html>

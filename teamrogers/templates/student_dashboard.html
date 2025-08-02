@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='student_dashboard.css') }}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar {
+            background-color: #001eff;
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .navbar h2, .navbar h3 {
+            margin: 5px;
+        }
+
+        .logout-btn {
+            background-color: #f42c09;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin: 20px;
+            padding: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #2409f3;
+            color: white;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .download-btn {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            background-color: #e9ecef;
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .dropdown-select {
+            margin-top: 10px;
+            padding: 8px;
+            border-radius: 5px;
+        }
+        .graph-section {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 12px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <h2>Welcome, {{ student_name }}</h2>
+        <h3>Class: {{ student_class }}</h3>
+        <h3>Roll Number: {{ student_roll_number }}</h3>
+        <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+    </nav>
+
+    <section class="container">
+        <h3>View Performance Graph</h3>
+        <form method="post" action="{{ url_for('student_dashboard') }}">
+            <select name="selected_graph_option" class="dropdown-select" onchange="this.form.submit()">
+                <option value="" disabled {% if not selected_graph_option %}selected{% endif %}>Select Option</option>
+                <option value="Test Performance" {% if selected_graph_option == 'Test Performance' %}selected{% endif %}>Test Performance</option>
+                <option value="Average Performance" {% if selected_graph_option == 'Average Performance' %}selected{% endif %}>Average Performance</option>
+            </select>
+        </form>
+        {% if graph_data_base64 %}
+            <div class="graph-section">
+                <img src="data:image/png;base64,{{ graph_data_base64 }}" alt="Performance Graph">
+            </div>
+        {% elif selected_graph_option %}
+            <p>No graph data available for the selected option.</p>
+        {% endif %}
+    </section>
+
+    <section class="container">
+        <h3>Homework</h3>
+        <ul>
+            {% for hw in student_homework %}
+                <li>{{ hw }}</li>
+            {% else %}
+                <li>No homework assigned yet.</li>
+            {% endfor %}
+        </ul>
+    </section>
+
+    <section class="container">
+        <h3>Your Marks</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Subject</th>
+                    <th>Test 1</th>
+                    <th>Test 2</th>
+                    <th>Test 3</th>
+                    <th>Average</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for subject, marks in student_marks.items() %}
+                    <tr>
+                        <td>{{ subject }}</td>
+                        {% for mark in marks %}
+                            <td>{{ mark }}</td>
+                        {% endfor %}
+                        <td>{{ student_averages.get(subject, 'N/A') }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <button class="download-btn" onclick="window.location.href='{{ url_for('download_report') }}'">
+            Download Report
+        </button>
+    </section>
+
+</body>
+</html>
